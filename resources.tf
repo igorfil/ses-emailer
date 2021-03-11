@@ -17,6 +17,26 @@ resource "aws_sqs_queue" "email-queue" {
   })
 }
 
+resource "aws_sqs_queue_policy" "test" {
+  queue_url = aws_sqs_queue.email-queue.id
+
+  policy = <<POLICY
+{
+"Version": "2012-10-17",
+"Id": "sqspolicy",
+"Statement": [
+  {
+    "Sid": "First",
+    "Effect": "Allow",
+    "Principal": "*",
+    "Action": "sqs:SendMessage",
+    "Resource": "${aws_sqs_queue.email-queue.arn}"
+  }
+]
+}
+POLICY
+}
+
 data "aws_iam_policy_document" "lambda_role_iam_policy" {
   statement {
     actions = ["sts:AssumeRole"]
